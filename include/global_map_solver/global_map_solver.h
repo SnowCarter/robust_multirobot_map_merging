@@ -8,6 +8,7 @@
 #include "SESync/SESync.h"
 #include "SESync/SESync_utils.h"
 #include <string>
+#include "findClique.h"
 
 namespace global_map_solver {
     /** \class GlobalMapSolver
@@ -55,8 +56,15 @@ namespace global_map_solver {
          * @return the formatted measurements
          */
         SESync::measurements_t fillMeasurements(const std::vector<int>& max_clique_data);
+       
 
     }; 
+
+    class grpahIOExt  : public FMC::CGraphIO{
+      public: 
+        bool readGraphMtx(const Eigen::MatrixXi& consistency_matrix, float connStrength = -DBL_MAX);
+
+    };
 }
 
 #endif

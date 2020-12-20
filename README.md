@@ -18,6 +18,7 @@ An example of usage of the libraries is available in the `examples/` folder.
 
 ## Build
 - Clone this repository in the source folder of your ROS workspace.
+- Submodule Optimization added at ceb629
 - Build using `catkin build` or `catkin_make`.
 
 _You can also build it normally using cmake._
