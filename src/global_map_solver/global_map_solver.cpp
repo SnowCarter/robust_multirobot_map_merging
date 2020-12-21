@@ -52,7 +52,7 @@ int GlobalMapSolver::solveGlobalMap() {
     if(gioExt.readGraphMtx(consistency_matrix)){
         gio.m_vi_Vertices.assign(gioExt.m_vi_Vertices.begin(), gioExt.m_vi_Vertices.end());
         gio.m_vi_Edges.assign(gioExt.m_vi_Edges.begin(), gioExt.m_vi_Edges.end());
-        gio.m_vd_Values.assign(gioExt.m_vd_Values.begin(), gioExt.m_vd_Values.end());
+        // gio.m_vd_Values.assign(gioExt.m_vd_Values.begin(), gioExt.m_vd_Values.end());
         gio.CalculateVertexDegrees();
     }
     // Compute maximum clique
@@ -62,7 +62,7 @@ int GlobalMapSolver::solveGlobalMap() {
     // std::cout << "dwq test: max_clique_data:" << max_clique_data[1] << std::endl; 
 
     // Print results
-    // graph_utils::printConsistentLoopClosures(pairwise_consistency_.getLoopClosures(), max_clique_data, CONSISTENCY_LOOP_CLOSURES_FILE_NAME);
+    graph_utils::printConsistentLoopClosures(pairwise_consistency_.getLoopClosures(), max_clique_data, CONSISTENCY_LOOP_CLOSURES_FILE_NAME);
     // Clean up
     max_clique_data.clear();
 

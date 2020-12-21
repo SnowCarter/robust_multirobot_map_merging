@@ -9,9 +9,9 @@ Eigen::MatrixXi PairwiseConsistency::computeConsistentMeasurementsMatrix() {
     // Determination of the chi squared threshold (numbers from chi-squared table)
     double threshold;
     if (nb_degree_freedom_ == 3){
-        threshold = 0.58;
+        threshold = 0.00005;
     } else {
-        threshold = 2.20;
+        threshold = 0.0220;
     }
 
     // Preallocate consistency matrix
@@ -96,7 +96,7 @@ double PairwiseConsistency::computeSquaredMahalanobisDistance(const geometry_msg
 
     // std::cout << covariance_matrix << std::endl; 
 
-    arma::mat covarianceMtxInverse = arma::pinv(covariance_matrix); 
+    arma::mat covarianceMtxInverse = arma::pinv(covariance_matrix,0.01); 
     // std::cout << covarianceMtxInverse << std::endl; 
 
     Eigen::Matrix<double, 6, 6> covarianceMtxInverseEign;
