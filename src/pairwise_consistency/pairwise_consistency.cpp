@@ -1,6 +1,7 @@
 // Copyright (C) 2018 by Pierre-Yves Lajoie <lajoie.py@gmail.com>
 
 #include "pairwise_consistency/pairwise_consistency.h"
+#include <armadillo>
 
 namespace pairwise_consistency {
 
@@ -83,12 +84,30 @@ geometry_msgs::PoseWithCovariance PairwiseConsistency::computeConsistencyPose(co
 
 double PairwiseConsistency::computeSquaredMahalanobisDistance(const geometry_msgs::PoseWithCovariance& transform) {
     // Extraction of the covariance matrix
-    Eigen::Matrix<double, 6, 6> covariance_matrix;
+    // Eigen::Matrix<double, 6, 6> covariance_matrix;
+    arma::mat covariance_matrix(6,6, arma::fill::zeros); 
+    // arma::mat66 covariance_matrix = arma::randu<mat>(6,6);; 
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             covariance_matrix(i,j) = transform.covariance[i*6+j];
         }
     }
+    // std::cout << "covarianceMtx:" << std::endl;
+
+    // std::cout << covariance_matrix << std::endl; 
+
+    arma::mat covarianceMtxInverse = arma::pinv(covariance_matrix); 
+    // std::cout << covarianceMtxInverse << std::endl; 
+
+    Eigen::Matrix<double, 6, 6> covarianceMtxInverseEign;
+
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 6; j++) {
+            covarianceMtxInverseEign(i,j) = covarianceMtxInverse[i, j];
+        }
+    }
+
+
 
     // Extraction of the pose vector
     Eigen::Matrix<double, 6, 1> pose_vector(6);
@@ -100,7 +119,7 @@ double PairwiseConsistency::computeSquaredMahalanobisDistance(const geometry_msg
     pose_vector(5) = transform.pose.orientation.z;
 
     // Computation of the squared Mahalanobis distance
-    double distance = pose_vector.transpose() * covariance_matrix * pose_vector;
+    double distance = pose_vector.transpose() * covarianceMtxInverseEign * pose_vector; //TODO: should add preudoinverse matrix
     return distance;
 }
 
