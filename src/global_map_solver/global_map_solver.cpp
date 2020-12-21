@@ -4,8 +4,6 @@
 #include <math.h>
 #include <sstream>      // std::istringstream
 
-
-
 namespace global_map_solver {
 
 const std::string GlobalMapSolver::CONSISTENCY_MATRIX_FILE_NAME = std::string("results/consistency_matrix.clq.mtx");
@@ -81,55 +79,6 @@ int GlobalMapSolver::solveGlobalMap() {
 
     return max_clique_size;
 }
-
-
-/*int GlobalMapSolver::solveGlobalMap() {
-    // Compute consistency matrix
-	std::cout << "hello 0" <<std::endl;
-
-    Eigen::MatrixXi consistency_matrix = pairwise_consistency_.computeConsistentMeasurementsMatrix();
-	std::cout << std::endl << "hello 1:" << consistency_matrix.rows() << " cols:" << consistency_matrix.cols() <<std::endl;
-    graph_utils::printConsistencyGraph(consistency_matrix, CONSISTENCY_MATRIX_FILE_NAME);
-	std::cout << "hello 2" <<std::endl;
-
-    
-    // Compute maximum clique
-    FMC::CGraphIO gio;
-    gio.readGraph(CONSISTENCY_MATRIX_FILE_NAME);
-	std::cout << gio.m_vd_Values.size() << std::endl; 
-    int max_clique_size = 0;
-    std::vector<int> max_clique_data;
-	std::cout << "hello 3" <<std::endl;
-    max_clique_size = FMC::maxClique(gio, max_clique_size, max_clique_data);
-	std::cout << "hello 4" <<std::endl;
-
-    // Print results
-    graph_utils::printConsistentLoopClosures(pairwise_consistency_.getLoopClosures(), max_clique_data, CONSISTENCY_LOOP_CLOSURES_FILE_NAME);
-	std::cout << "hello 5" <<std::endl;
-	std::cout << std::endl << "dwq test:"  << " loop closures " <<pairwise_consistency_.getLoopClosures().size() <<" max_clique_data size:" << max_clique_data.size() << std::endl ;
-	for (auto i : max_clique_data){
-		std::cout << "Data:" << i << std::endl; 
-	}
-    // Clean up
-    max_clique_data.clear();
-
-    // Fill measurements
-    SESync::measurements_t measurements = fillMeasurements(max_clique_data);
-    
-    // SE-Sync options
-    SESync::SESyncOpts opts;
-    opts.verbose = true;
-    opts.num_threads = 4;
-
-    /// RUN SE-SYNC! (optimization)
-    SESync::SESyncResult results = SESync::SESync(measurements, opts);    
-
-    return max_clique_size;
-}*/
-
-
-
-
 
 bool grpahIOExt::readGraphMtx( const Eigen::MatrixXi& consistency_matrix, float connStrength){
     // char data_type[LINE_LENGTH] = "pattern";
