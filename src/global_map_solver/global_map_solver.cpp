@@ -61,9 +61,10 @@ int GlobalMapSolver::solveGlobalMap() {
     int max_clique_size = 0;
     std::vector<int> max_clique_data;
     max_clique_size = FMC::maxClique(gio, max_clique_size, max_clique_data);
+    // std::cout << "dwq test: max_clique_data:" << max_clique_data[1] << std::endl; 
 
     // Print results
-    graph_utils::printConsistentLoopClosures(pairwise_consistency_.getLoopClosures(), max_clique_data, CONSISTENCY_LOOP_CLOSURES_FILE_NAME);
+    // graph_utils::printConsistentLoopClosures(pairwise_consistency_.getLoopClosures(), max_clique_data, CONSISTENCY_LOOP_CLOSURES_FILE_NAME);
     // Clean up
     max_clique_data.clear();
 
@@ -80,6 +81,55 @@ int GlobalMapSolver::solveGlobalMap() {
 
     return max_clique_size;
 }
+
+
+/*int GlobalMapSolver::solveGlobalMap() {
+    // Compute consistency matrix
+	std::cout << "hello 0" <<std::endl;
+
+    Eigen::MatrixXi consistency_matrix = pairwise_consistency_.computeConsistentMeasurementsMatrix();
+	std::cout << std::endl << "hello 1:" << consistency_matrix.rows() << " cols:" << consistency_matrix.cols() <<std::endl;
+    graph_utils::printConsistencyGraph(consistency_matrix, CONSISTENCY_MATRIX_FILE_NAME);
+	std::cout << "hello 2" <<std::endl;
+
+    
+    // Compute maximum clique
+    FMC::CGraphIO gio;
+    gio.readGraph(CONSISTENCY_MATRIX_FILE_NAME);
+	std::cout << gio.m_vd_Values.size() << std::endl; 
+    int max_clique_size = 0;
+    std::vector<int> max_clique_data;
+	std::cout << "hello 3" <<std::endl;
+    max_clique_size = FMC::maxClique(gio, max_clique_size, max_clique_data);
+	std::cout << "hello 4" <<std::endl;
+
+    // Print results
+    graph_utils::printConsistentLoopClosures(pairwise_consistency_.getLoopClosures(), max_clique_data, CONSISTENCY_LOOP_CLOSURES_FILE_NAME);
+	std::cout << "hello 5" <<std::endl;
+	std::cout << std::endl << "dwq test:"  << " loop closures " <<pairwise_consistency_.getLoopClosures().size() <<" max_clique_data size:" << max_clique_data.size() << std::endl ;
+	for (auto i : max_clique_data){
+		std::cout << "Data:" << i << std::endl; 
+	}
+    // Clean up
+    max_clique_data.clear();
+
+    // Fill measurements
+    SESync::measurements_t measurements = fillMeasurements(max_clique_data);
+    
+    // SE-Sync options
+    SESync::SESyncOpts opts;
+    opts.verbose = true;
+    opts.num_threads = 4;
+
+    /// RUN SE-SYNC! (optimization)
+    SESync::SESyncResult results = SESync::SESync(measurements, opts);    
+
+    return max_clique_size;
+}*/
+
+
+
+
 
 bool grpahIOExt::readGraphMtx( const Eigen::MatrixXi& consistency_matrix, float connStrength){
     // char data_type[LINE_LENGTH] = "pattern";
@@ -98,7 +148,8 @@ bool grpahIOExt::readGraphMtx( const Eigen::MatrixXi& consistency_matrix, float 
         }
       }
     }
-    std::cout << "dwq_num_of_consistence: " << num_of_entries << std::endl;
+
+    std::cout << "num_of_entries: " << num_of_entries << std::endl;
     row = consistency_matrix.rows();
     col = consistency_matrix.cols();
     if(row!=col) 
@@ -107,7 +158,8 @@ bool grpahIOExt::readGraphMtx( const Eigen::MatrixXi& consistency_matrix, float 
 		cout<<"*\t row!=col. This is not a square matrix. Can't process."<<endl;
 		return false;
 	}
-    ifstream in(ss.str());
+    
+    istringstream in(ss.str());
     istringstream in2; 
     string line = ""; 
     double value; 
@@ -120,12 +172,15 @@ bool grpahIOExt::readGraphMtx( const Eigen::MatrixXi& consistency_matrix, float 
 		std::getline(in,line);
 		entry_counter++;
 
+
 		if(line!="")
 		{
+            
 			in2.clear();
 			in2.str(line);
 
 			in2 >> rowIndex >> colIndex >> value;
+            // std::cout << "row, col, value: "<< rowIndex << " " << colIndex << " " << value << std::endl;
 			rowIndex--;
 			colIndex--;
 
@@ -173,7 +228,7 @@ bool grpahIOExt::readGraphMtx( const Eigen::MatrixXi& consistency_matrix, float 
 				}
 			}
 		}
-	}
+	}   
 
 	//cout << "No. of upper triangular pruned: " << num_upper_triangular << endl;
 	m_vi_Vertices.push_back(m_vi_Edges.size());
@@ -198,50 +253,6 @@ bool grpahIOExt::readGraphMtx( const Eigen::MatrixXi& consistency_matrix, float 
 	return true;
 
 }
-
-/*int GlobalMapSolver::solveGlobalMap() {
-    // Compute consistency matrix
-	std::cout << "hello 0" <<std::endl;
-
-    Eigen::MatrixXi consistency_matrix = pairwise_consistency_.computeConsistentMeasurementsMatrix();
-	std::cout << std::endl << "hello 1:" << consistency_matrix.rows() << " cols:" << consistency_matrix.cols() <<std::endl;
-    graph_utils::printConsistencyGraph(consistency_matrix, CONSISTENCY_MATRIX_FILE_NAME);
-	std::cout << "hello 2" <<std::endl;
-
-    
-    // Compute maximum clique
-    FMC::CGraphIO gio;
-    gio.readGraph(CONSISTENCY_MATRIX_FILE_NAME);
-	std::cout << gio.m_vd_Values.size() << std::endl; 
-    int max_clique_size = 0;
-    std::vector<int> max_clique_data;
-	std::cout << "hello 3" <<std::endl;
-    max_clique_size = FMC::maxClique(gio, max_clique_size, max_clique_data);
-	std::cout << "hello 4" <<std::endl;
-
-    // Print results
-    graph_utils::printConsistentLoopClosures(pairwise_consistency_.getLoopClosures(), max_clique_data, CONSISTENCY_LOOP_CLOSURES_FILE_NAME);
-	std::cout << "hello 5" <<std::endl;
-	std::cout << std::endl << "dwq test:"  << " loop closures " <<pairwise_consistency_.getLoopClosures().size() <<" max_clique_data size:" << max_clique_data.size() << std::endl ;
-	for (auto i : max_clique_data){
-		std::cout << "Data:" << i << std::endl; 
-	}
-    // Clean up
-    max_clique_data.clear();
-
-    // Fill measurements
-    SESync::measurements_t measurements = fillMeasurements(max_clique_data);
-    
-    // SE-Sync options
-    SESync::SESyncOpts opts;
-    opts.verbose = true;
-    opts.num_threads = 4;
-
-    /// RUN SE-SYNC! (optimization)
-    SESync::SESyncResult results = SESync::SESync(measurements, opts);    
-
-    return max_clique_size;
-}*/
 
 
 }
